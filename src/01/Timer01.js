@@ -30,7 +30,7 @@ export default function Timer01() {
         "--interval": interval
       }}
     >
-      <header>Exercise 00</header>
+      <header>Exercise 01</header>
       <ProgressCircle />
       <div className="display">
         <div className="label">{state.value}</div>

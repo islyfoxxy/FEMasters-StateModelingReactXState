@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useMachine } from "@xstate/react";
 import timerMachine from "./timerMachine";
 import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
@@ -8,22 +8,36 @@ import ProgressCircle from "../ProgressCircle";
 
 inspect({ iframe: false });
 
-export default function Timer02() {
+export default function Timer04() {
   const [state, send] = useMachine(timerMachine, { devTools: true });
-  const { duration, elapsed, interval } = state.context;
-
+  const {
+    context: { duration, elapsed, interval },
+    value: status
+  } = state;
+  const countdownInterval = useRef(null);
   const handleReset = () => send({ type: "RESET" });
   const handleAction = () => send({ type: "TOGGLE" });
   const handleAddMinute = () => send({ type: "ADD_MINUTE" });
 
   useEffect(() => {
-    // setInterval(() => {}, 1000);
-  }, [state]);
+    if (status === "running") {
+      clearInterval(countdownInterval.current);
+      countdownInterval.current = setInterval(() => {
+        send("TICK");
+      }, 1000 * interval);
+    } else {
+      clearInterval(countdownInterval.current);
+    }
+
+    return () => {
+      clearInterval(countdownInterval.current);
+    };
+  }, [status, send, interval]);
 
   return (
     <div
       className="timer"
-      data-state={state.value}
+      data-state={status}
       style={{
         // @ts-ignore
         "--duration": duration,
@@ -31,10 +45,10 @@ export default function Timer02() {
         "--interval": interval
       }}
     >
-      <header>Exercise 02</header>
+      <header>Exercise 03</header>
       <ProgressCircle />
       <div className="display">
-        <div className="label">{state.value}</div>
+        <div className="label">{status}</div>
         <div className="elapsed" onClick={handleAction}>
           {Math.ceil(duration - elapsed)}
         </div>
@@ -49,9 +63,7 @@ export default function Timer02() {
       </div>
       <div className="actions">
         <button onClick={handleAction} title="Timer Action">
-          <FontAwesomeIcon
-            icon={state.value === "running" ? faPause : faPlay}
-          />
+          <FontAwesomeIcon icon={status === "running" ? faPause : faPlay} />
         </button>
       </div>
     </div>
