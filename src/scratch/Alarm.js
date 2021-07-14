@@ -12,11 +12,10 @@ import alarmMachine from "./alarmMachine";
 export default function Alarm({ alarmRef }) {
   // const [status, dispatch] = useReducer(alarmReducer, initState);
   const [state, send] = useMachine(alarmMachine);
-  // const [state, send] = useService(alarmRef);
-  // const {
-  //   value: status,
-  //   context: { count }
-  // } = state;
+  const {
+    value: status,
+    context: { count }
+  } = state;
 
   const time = new Date().toLocaleTimeString("en-US", {
     hour: "2-digit",
@@ -26,20 +25,22 @@ export default function Alarm({ alarmRef }) {
 
   useEffect(() => {
     const timeout =
-      state.value === "pending"
+      status === "pending"
         ? setTimeout(() => send({ type: "SUCCESS" }), 3000)
         : null;
     return () => clearTimeout(timeout);
-  }, [state.value, send]);
+  }, [status, send]);
 
   return (
     <div className="alarm">
-      <div className="alarmTime">{time}</div>
+      <div className="alarmTime">
+        {time}({count})
+      </div>
       <div
         className="alarmToggle"
-        data-active={state.value === "active" || undefined}
+        data-active={status === "active" || undefined}
         onClick={handleToggle}
-        style={{ opacity: state.value === "pending" ? 0.5 : 1 }}
+        style={{ opacity: status === "pending" ? 0.5 : 1 }}
       />
     </div>
   );
