@@ -1,4 +1,6 @@
-const alarmMachine = {
+import { createMachine } from "xstate";
+
+const alarmMachine = createMachine({
   initial: "inactive",
   states: {
     inactive: {
@@ -9,7 +11,7 @@ const alarmMachine = {
     pending: {
       on: {
         SUCCESS: "active",
-        TOGGLE: "pending"
+        TOGGLE: "inactive"
       }
     },
     active: {
@@ -18,6 +20,6 @@ const alarmMachine = {
       }
     }
   }
-};
+});
 
 export default alarmMachine;

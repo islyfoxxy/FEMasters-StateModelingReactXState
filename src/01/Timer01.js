@@ -1,19 +1,19 @@
-import { useEffect, useReducer } from "react";
+import { useEffect } from "react";
+import { useMachine } from "@xstate/react";
 import timerMachine from "./timerMachine";
-import ProgressCircle from "../ProgressCircle";
 import { faPlay, faPause } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { inspect } from "@xstate/inspect";
+import ProgressCircle from "../ProgressCircle";
 
-const reducer = (state, event) => {
-  return timerMachine.states[state]?.on[event.type] || state;
-};
+inspect({ iframe: false });
 
-export default function Timer00() {
-  const [state, dispatch] = useReducer(reducer, "idle");
-  const { duration, elapsed, interval } = timerMachine.context;
+export default function Timer01() {
+  const [state, send] = useMachine(timerMachine, { devTools: true });
+  const { duration, elapsed, interval } = state.context;
 
-  const handleReset = () => dispatch({ type: "RESET" });
-  const handleAction = () => dispatch({ type: "TOGGLE" });
+  const handleReset = () => send({ type: "RESET" });
+  const handleAction = () => send({ type: "TOGGLE" });
 
   useEffect(() => {
     // setInterval(() => {}, 1000);
@@ -22,7 +22,7 @@ export default function Timer00() {
   return (
     <div
       className="timer"
-      data-state={state}
+      data-state={state.value}
       style={{
         // @ts-ignore
         "--duration": duration,
@@ -33,7 +33,7 @@ export default function Timer00() {
       <header>Exercise 00</header>
       <ProgressCircle />
       <div className="display">
-        <div className="label">{state}</div>
+        <div className="label">{state.value}</div>
         <div className="elapsed" onClick={handleAction}>
           {Math.ceil(duration - elapsed)}
         </div>
@@ -43,7 +43,9 @@ export default function Timer00() {
       </div>
       <div className="actions">
         <button onClick={handleAction} title="Timer Action">
-          <FontAwesomeIcon icon={state === "running" ? faPause : faPlay} />
+          <FontAwesomeIcon
+            icon={state.value === "running" ? faPause : faPlay}
+          />
         </button>
       </div>
     </div>
