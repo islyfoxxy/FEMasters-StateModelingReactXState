@@ -34,7 +34,7 @@ export default function Alarm({ alarmRef }) {
   return (
     <div className="alarm">
       <div className="alarmTime">
-        {time}({count})
+        {time}({count}) {state.toStrings().join(" ")}
       </div>
       <div
         className="alarmToggle"

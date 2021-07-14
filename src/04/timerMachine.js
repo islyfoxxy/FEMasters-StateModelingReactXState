@@ -1,7 +1,7 @@
 import { assign, createMachine, send } from "xstate";
 
 const initState = {
-  duration: 60,
+  duration: 5,
   elapsed: 0,
   interval: 0.1
 };
@@ -27,14 +27,20 @@ const timerMachine = createMachine(
           ADD_MINUTE: {
             actions: "addMinute"
           },
-          TICK: {
-            actions: "tick"
-          }
+          TICK: [
+            { target: "expired", cond: "isTimerDone" },
+            { actions: "tick" }
+          ]
         }
       },
       paused: {
         on: {
           TOGGLE: "running",
+          RESET: "idle"
+        }
+      },
+      expired: {
+        on: {
           RESET: "idle"
         }
       }
@@ -46,12 +52,16 @@ const timerMachine = createMachine(
         duration: ({ duration }) => duration + 60
       }),
       tick: assign({
-        elapsed: ({ elapsed, interval }) => elapsed + interval
+        elapsed: ({ elapsed, interval }) =>
+          Math.round((elapsed + interval) * 100) / 100
       }),
       reset: assign({
         duration: initState.duration,
         elapsed: initState.elapsed
       })
+    },
+    guards: {
+      isTimerDone: ({ duration, elapsed }) => elapsed >= duration
     }
   }
 );

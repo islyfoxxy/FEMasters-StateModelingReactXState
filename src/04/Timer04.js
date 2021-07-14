@@ -45,7 +45,7 @@ export default function Timer04() {
         "--interval": interval
       }}
     >
-      <header>Exercise 03</header>
+      <header>Exercise 04</header>
       <ProgressCircle />
       <div className="display">
         <div className="label">{status}</div>
@@ -53,7 +53,7 @@ export default function Timer04() {
           {Math.ceil(duration - elapsed)}
         </div>
         <div className="controls">
-          {state.matches("paused") && (
+          {["paused", "expired"].some(state.matches) && (
             <button onClick={handleReset}>Reset</button>
           )}
           {state.matches("running") && (

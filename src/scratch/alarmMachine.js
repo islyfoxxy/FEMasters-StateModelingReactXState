@@ -9,10 +9,14 @@ const alarmMachine = createMachine(
     states: {
       inactive: {
         on: {
-          TOGGLE: {
-            target: "pending",
-            actions: "incrementCount"
-          }
+          TOGGLE: [
+            {
+              target: "pending",
+              cond: "canCount",
+              actions: "incrementCount"
+            },
+            { target: "disabled" }
+          ]
         }
       },
       pending: {
@@ -25,12 +29,16 @@ const alarmMachine = createMachine(
         on: {
           TOGGLE: "inactive"
         }
-      }
+      },
+      disabled: {}
     }
   },
   {
     actions: {
       incrementCount: assign({ count: ({ count }) => count + 1 })
+    },
+    guards: {
+      canCount: ({ count }) => count < 5
     }
   }
 );
