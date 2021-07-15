@@ -1,4 +1,10 @@
-import { createMachine, assign } from "xstate";
+import { createMachine, assign, send } from "xstate";
+
+// const saveAlarm = () => {
+//   return new Promise((resolve, reject) => {
+//     setTimeout(() => resolve(100), 3000);
+//   });
+// };
 
 const alarmMachine = createMachine(
   {
@@ -15,14 +21,41 @@ const alarmMachine = createMachine(
               cond: "canCount",
               actions: "incrementCount"
             },
-            { target: "disabled" }
+            { target: "rejected" }
           ]
         }
       },
       pending: {
+        invoke: {
+          id: "timeout",
+          // src: () => saveAlarm(),
+          src: () => (sendBack, receive) => {
+            receive((event) => {
+              console.log("EVENT", event);
+            });
+
+            const timer = setTimeout(() => {
+              sendBack({ type: "SUCCESS" });
+            }, 3000);
+
+            // clean up when transition to another state
+            return () => {
+              console.log("CLEAN UP!");
+              clearTimeout(timer);
+            };
+          }
+          // onDone: [
+          //   { target: "active", cond: (_, { data }) => data > 99 },
+          //   { target: "rejected" }
+          // ],
+          // onError: "rejected"
+        },
         on: {
           SUCCESS: "active",
-          TOGGLE: "inactive"
+          TOGGLE: {
+            target: "inactive"
+            // actions: send({ type: "GOODBYE" }, { to: "timeout" })
+          }
         }
       },
       active: {
@@ -30,7 +63,7 @@ const alarmMachine = createMachine(
           TOGGLE: "inactive"
         }
       },
-      disabled: {}
+      rejected: {}
     }
   },
   {

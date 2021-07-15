@@ -1,6 +1,6 @@
 // import { createMachine, assign, spawn, sendParent } from "xstate";
 // import { useService } from "@xstate/react";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import { createMachine } from "xstate";
 import { useMachine } from "@xstate/react";
 import alarmMachine from "./alarmMachine";
@@ -37,7 +37,7 @@ const greetingMachine = createMachine(
 export default function Alarm({ alarmRef }) {
   // const [status, dispatch] = useReducer(alarmReducer, initState);
   const [state, send] = useMachine(alarmMachine);
-  const [greetState, greetSend] = useMachine(greetingMachine);
+  const [greetState] = useMachine(greetingMachine);
   const {
     value: status,
     context: { count }
@@ -49,13 +49,13 @@ export default function Alarm({ alarmRef }) {
   });
   const handleToggle = () => send({ type: "TOGGLE" });
 
-  useEffect(() => {
-    const timeout =
-      status === "pending"
-        ? setTimeout(() => send({ type: "SUCCESS" }), 3000)
-        : null;
-    return () => clearTimeout(timeout);
-  }, [status, send]);
+  // useEffect(() => {
+  //   const timeout =
+  //     status === "pending"
+  //       ? setTimeout(() => send({ type: "SUCCESS" }), 3000)
+  //       : null;
+  //   return () => clearTimeout(timeout);
+  // }, [status, send]);
 
   return (
     <div className="alarm">
