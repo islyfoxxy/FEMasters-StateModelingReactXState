@@ -1,4 +1,4 @@
-import { createMachine, assign, send } from "xstate";
+import { createMachine, assign, send, sendParent } from "xstate";
 
 // const saveAlarm = () => {
 //   return new Promise((resolve, reject) => {
@@ -59,6 +59,7 @@ const alarmMachine = createMachine(
         }
       },
       active: {
+        entry: sendParent("ACTIVE"),
         on: {
           TOGGLE: "inactive"
         }

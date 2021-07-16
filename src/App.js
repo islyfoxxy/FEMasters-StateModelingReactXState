@@ -8,6 +8,7 @@ import Timer04 from "./04/Timer04";
 import Timer05 from "./05/Timer05";
 import Timer06 from "./06/Timer06";
 import Timer07 from "./07/Timer07";
+import AppFinal from "./08/AppFinal";
 import "./index.scss";
 
 export default function App() {
@@ -23,6 +24,7 @@ export default function App() {
         <Route exact path="/05" component={Timer05}></Route>
         <Route exact path="/06" component={Timer06}></Route>
         <Route exact path="/07" component={Timer07}></Route>
+        <Route exact path="/08" component={AppFinal}></Route>
       </Switch>
     </Router>
   );
